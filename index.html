@@ -801,7 +801,7 @@
       /* --- Screenshot fixes, 2026-11-13: accband tiles, form card, visa guide overflow --- */
       /* Page must never get wider than the phone: clip any stray horizontal overflow at the root. */
       html, body { overflow-x: clip; }
-      .x-band { max-width: 100%; }
+      /* .x-band keeps width:100vw (full-bleed); html/body overflow-x:clip contains it. Do not cap it with max-width:100%. */
       /* Form card removed everywhere: forms sit directly on the section background. */
       .x-form-card { background: transparent; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
       /* Accband tiles (home "Land with a home already waiting" and visa "A second pair of eyes"):
