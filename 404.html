@@ -829,6 +829,15 @@
       .x-search, .x-search__box, .x-search input { width: 100%; max-width: 100%; }
       .x-search input { text-overflow: ellipsis; }
       .x-finder .x-tabs-wrap { min-width: 0; width: 100%; }
+
+      /* --- Blog page overflow, 2026-11-13: same grid min-width trap, blogbar + posts + hero --- */
+      main, section, .x-wrap, .x-sec, .x-phero .x-wrap { min-width: 0; }
+      .x-blogbar, .x-blogbar > *, #bl-tabs, .x-posts, .x-posts > * { min-width: 0; }
+      .x-posts, .x-blogbar { width: 100%; }
+      .x-post--feature { min-width: 0; width: 100%; }
+      .x-post--feature .x-post__media, .x-post--feature .x-post__body { min-width: 0; }
+      .x-post h3, .x-post p { overflow-wrap: anywhere; }
+      .x-phero .x-btn { max-width: 100%; }
     </style>
   </head>
   <body>
