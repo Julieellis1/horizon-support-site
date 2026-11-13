@@ -354,7 +354,7 @@
       .x-fab svg { width: 30px; height: 30px; }
       .x-fab::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #25d366; z-index: -1; }
       .x-motion .x-fab::before { animation: x-pulse 2.2s ease-out infinite; }
-      @keyframes x-pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.7); opacity: 0; } }
+      @keyframes x-pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.35); opacity: 0; } }
       .x-top { position: fixed; right: max(24px, env(safe-area-inset-right)); bottom: 92px; z-index: 60; width: var(--tap); height: var(--tap); border: 1px solid var(--x-line); border-radius: 50%; display: grid; place-items: center; background: var(--x-card); color: var(--x-ink); box-shadow: var(--x-shadow); cursor: pointer; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity 300ms, transform 300ms var(--ease-out); }
       .x-top.is-on { opacity: 1; transform: none; pointer-events: auto; }
       .x-top svg { width: 20px; height: 20px; }
@@ -779,7 +779,7 @@
         background: linear-gradient(to right, transparent, var(--x-bg) 78%); opacity: 0; transition: opacity 200ms; z-index: 1;
       }
       .x-tabs-wrap.is-scrollable::after { opacity: 1; }
-      .x-tabs-wrap.is-at-end::after, .x-tabs-wrap.is-scrolled::after { opacity: 0; }
+      .x-tabs-wrap.is-at-end::after { opacity: 0; }
       .x-tabs { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
       .x-tab { scroll-snap-align: start; }
       .x-swipe-hint {
@@ -794,7 +794,7 @@
         -webkit-mask-image: linear-gradient(to right, #000 86%, transparent 100%);
         mask-image: linear-gradient(to right, #000 86%, transparent 100%);
       }
-      .x-steps__list.is-at-end, .x-steps__list.is-scrolled {
+      .x-steps__list.is-at-end {
         -webkit-mask-image: none; mask-image: none;
       }
 
@@ -838,6 +838,9 @@
       .x-post--feature .x-post__media, .x-post--feature .x-post__body { min-width: 0; }
       .x-post h3, .x-post p { overflow-wrap: anywhere; }
       .x-phero .x-btn { max-width: 100%; }
+
+      /* WhatsApp fab clearance on mobile: footer content must clear the fixed button. */
+      @media (max-width: 599px) { .x-foot { padding-bottom: 96px; } }
     </style>
   </head>
   <body>
@@ -3560,14 +3563,18 @@
             wrap = w;
           }
           function sync() {
+            if (!el.clientWidth) { wrap.classList.remove("is-at-end"); setTimeout(sync, 400); return; }
             var canScroll = el.scrollWidth > el.clientWidth + 4;
             var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
             wrap.classList.toggle("is-scrollable", canScroll && !atEnd);
             wrap.classList.toggle("is-at-end", !canScroll || atEnd);
-            if (el.scrollLeft > 4) wrap.classList.add("is-scrolled");
+            wrap.classList.toggle("is-scrolled", el.scrollLeft > 4);
           }
+          el._swipeSync = sync;
           el.addEventListener("scroll", sync, { passive: true });
           window.addEventListener("resize", sync);
+          window.addEventListener("hashchange", function () { setTimeout(sync, 100); setTimeout(sync, 600); });
+          if (window.ResizeObserver) new ResizeObserver(sync).observe(el);
           setTimeout(sync, 300);
           setTimeout(sync, 1200);
           sync();
@@ -3576,8 +3583,8 @@
           document.querySelectorAll(".x-tabs, .x-steps__list").forEach(setup);
           if (window.MutationObserver) {
             new MutationObserver(function () {
-              document.querySelectorAll(".x-tabs, .x-steps__list").forEach(setup);
-            }).observe(document.body, { childList: true, subtree: true });
+              document.querySelectorAll(".x-tabs, .x-steps__list").forEach(function (el) { setup(el); if (el._swipeSync) el._swipeSync(); });
+            }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
           }
         }
         if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
