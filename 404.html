@@ -797,6 +797,38 @@
       .x-steps__list.is-at-end, .x-steps__list.is-scrolled {
         -webkit-mask-image: none; mask-image: none;
       }
+
+      /* --- Screenshot fixes, 2026-11-13: accband tiles, form card, visa guide overflow --- */
+      /* Page must never get wider than the phone: clip any stray horizontal overflow at the root. */
+      html, body { overflow-x: clip; }
+      .x-band { max-width: 100%; }
+      /* Form card removed everywhere: forms sit directly on the section background. */
+      .x-form-card { background: transparent; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
+      /* Accband tiles (home "Land with a home already waiting" and visa "A second pair of eyes"):
+         2 columns left only ~78px for text on a phone, so Manchester / Documents checklist ran off the tile
+         and the tile ran off the panel. Single column on mobile, tiles can shrink and wrap. */
+      .x-accband__tiles li { grid-template-columns: 40px minmax(0, 1fr); }
+      .x-accband__tiles li > span { min-width: 0; }
+      .x-accband__tiles b, .x-accband__tiles small { overflow-wrap: anywhere; word-break: break-word; display: block; }
+      @media (max-width: 599px) {
+        .x-accband { padding: 24px 20px; }
+        .x-accband__tiles { grid-template-columns: minmax(0, 1fr); }
+        .x-accband__tiles li:nth-child(even) { transform: none; }
+      }
+      /* Visa guide complete page overflow: .x-guide is a grid, and a grid item defaults to min-width auto,
+         so the wide nowrap .x-tabs row forced the whole guide (and page) wider than the phone.
+         Let the grid items shrink, keep the tab row scrolling inside its own box. */
+      .x-guide, .x-guide > *, .x-tabs, .x-tabs-wrap, .x-dest-panel, .x-steps, .x-steps > *, .x-steps__list, .x-dest, .x-dest__main { min-width: 0; }
+      .x-tabs, .x-tabs-wrap { width: 100%; }
+      .x-dest-panel { overflow-wrap: anywhere; }
+      .x-dest-panel h3, .x-dest-panel p, .x-dest-panel li { overflow-wrap: anywhere; word-break: break-word; }
+      .x-ticks li { min-width: 0; overflow-wrap: anywhere; }
+
+      /* --- Accommodation finder overflow, 2026-11-13: same grid min-width trap as the visa guide --- */
+      .x-finder, .x-finder > *, .x-finder__bar, .x-search, .x-search__box, .x-blogbar { min-width: 0; }
+      .x-search, .x-search__box, .x-search input { width: 100%; max-width: 100%; }
+      .x-search input { text-overflow: ellipsis; }
+      .x-finder .x-tabs-wrap { min-width: 0; width: 100%; }
     </style>
   </head>
   <body>
